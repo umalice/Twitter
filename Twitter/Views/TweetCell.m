@@ -18,7 +18,8 @@
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+    
+    //[super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
 }
@@ -29,7 +30,7 @@
     self.tweetText.text = self.tweet.text;
     self.name.text = self.tweet.user.name;
     self.screenName.text = [NSString stringWithFormat:@"@%@", self.tweet.user.screenName];
-    self.timeStamp.text = self.tweet.createdAtString;
+    self.timeStamp.text = self.tweet.timeAgoString;
     self.faveCount.text = [NSString stringWithFormat:@"%d", self.tweet.favoriteCount];
     self.retweetCount.text = [NSString stringWithFormat:@"%d", self.tweet.retweetCount];
     self.replyCount.text = [NSString stringWithFormat:@"%d", self.tweet.replyCount];
@@ -52,7 +53,7 @@
     self.tweetText.text = self.tweet.text;
     self.name.text = self.tweet.user.name;
     self.screenName.text = [NSString stringWithFormat:@"@%@", self.tweet.user.screenName];
-    self.timeStamp.text = self.tweet.createdAtString;
+    self.timeStamp.text = self.tweet.timeAgoString;
     self.faveCount.text = [NSString stringWithFormat:@"%d", self.tweet.favoriteCount];
     self.retweetCount.text = [NSString stringWithFormat:@"%d", self.tweet.retweetCount];
     self.replyCount.text = [NSString stringWithFormat:@"%d", self.tweet.replyCount];

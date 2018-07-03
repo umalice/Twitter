@@ -20,6 +20,7 @@
 @property (nonatomic, strong) User *user;
 @property (nonatomic, strong) NSString *createdAtString;
 @property (nonatomic) int replyCount;
+@property (nonatomic, strong) NSString *timeAgoString;
 
 @property (nonatomic, strong) User *retweetedByUser;
 
