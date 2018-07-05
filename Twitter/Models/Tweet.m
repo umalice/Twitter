@@ -9,6 +9,7 @@
 #import "Tweet.h"
 #import "User.h"
 #import "DateTools.h"
+#import "APIManager.h"
 
 @implementation Tweet
 
@@ -65,7 +66,72 @@
     return tweets;
 }
 
+- (void)didFavorite:(Tweet *)tweet {
+    
+    tweet.favorited = YES;
+    tweet.favoriteCount += 1;
 
+    [[APIManager shared] favorite:tweet completion:^(Tweet *tweet, NSError *error) {
+        if(error){
+            NSLog(@"Error favoriting tweet: %@", error.localizedDescription);
+        }
+        else{
+            NSLog(@"Successfully favorited this tweet: %@", tweet.text);
+        }
+    }];
+    
+}
+
+- (void)didUnfavorite:(Tweet *)tweet {
+    
+    tweet.favorited = NO;
+    tweet.favoriteCount -= 1;
+    
+    [[APIManager shared] unfavorite:tweet completion:^(Tweet *tweet, NSError *error) {
+        if(error){
+            NSLog(@"Error unfavoriting tweet: %@", error.localizedDescription);
+        }
+        else{
+            NSLog(@"Successfully unfavorited this tweet: %@", tweet.text);
+        }
+    }];
+    
+}
+
+- (void)didRetweet:(Tweet *)tweet {
+    
+    tweet.retweeted = YES;
+    tweet.retweetCount += 1;
+
+    
+    [[APIManager shared] retweet:tweet completion:^(Tweet *tweet, NSError *error) {
+        if(error){
+            NSLog(@"Error retweeting tweet: %@", error.localizedDescription);
+        }
+        else{
+            NSLog(@"Successfully retweeted this tweet: %@", tweet.text);
+        }
+    }];
+    
+}
+
+
+- (void)didUnretweet:(Tweet *)tweet {
+    
+    tweet.retweeted = NO;
+    tweet.retweetCount -= 1;
+
+    
+    [[APIManager shared] unretweet:tweet completion:^(Tweet *tweet, NSError *error) {
+        if(error){
+            NSLog(@"Error unretweeting tweet: %@", error.localizedDescription);
+        }
+        else{
+            NSLog(@"Successfully unretweeted this tweet: %@", tweet.text);
+        }
+    }];
+    
+}
 
 
 

@@ -9,9 +9,14 @@
 #import "ComposeViewController.h"
 #import "Tweet.h"
 #import "APIManager.h"
+#import "User.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface ComposeViewController ()
 @property (weak, nonatomic) IBOutlet UITextView *composeView;
+@property (weak, nonatomic) IBOutlet UILabel *replyName;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 
 @end
 
@@ -20,6 +25,31 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.composeView becomeFirstResponder];
+    
+    if(self.replyTweet) {
+        
+        self.replyName.text = [NSString stringWithFormat:@"Replying to @%@", self.replyTweet.user.screenName];
+        [self.replyName setHidden:NO];
+        self.topConstraint.constant = 48;
+        
+        [[APIManager shared] getCurrentUser:^(User *user, NSError *error) {
+            if(error){
+                NSLog(@"Error getting user: %@", error.localizedDescription);
+            }
+            else{
+                NSLog(@"Successfully got user");
+                User *currentUser = [[User alloc] initWithDictionary:(NSDictionary *)user];
+                NSURL *url = [NSURL URLWithString:currentUser.profilePicURLString];
+                self.profilePic.image = nil;
+                [self.profilePic setImageWithURL:url];
+            }
+        }];
+        
+
+        
+    } else {
+        [self.replyName setHidden:YES];
+    }
 
 }
 
@@ -33,7 +63,15 @@
 }
 
 - (IBAction)tweetButton:(id)sender {
-    NSString *newTweet = self.composeView.text;
+    
+    NSString *newTweet;
+    if(self.replyTweet) {
+        
+        newTweet = [NSString stringWithFormat:@"@%@ %@", self.replyTweet.user.screenName, self.composeView.text];
+    } else {
+        newTweet = self.composeView.text;
+    }
+
     
     [[APIManager shared] postStatusWithText:newTweet completion:^(Tweet *tweet, NSError *error) {
         

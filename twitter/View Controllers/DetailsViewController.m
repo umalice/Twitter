@@ -9,9 +9,10 @@
 #import "DetailsViewController.h"
 #import "UIImageView+AFNetworking.h"
 #import "APIManager.h"
-#import "ReplyViewController.h"
+#import "ComposeViewController.h"
 
-@interface DetailsViewController ()
+@interface DetailsViewController () <ComposeViewControllerDelegate>
+
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *name;
 @property (weak, nonatomic) IBOutlet UILabel *screenName;
@@ -50,6 +51,17 @@
     self.faveCount.text = [NSString stringWithFormat:@"%d", self.tweet.favoriteCount];
     self.retweetCount.text = [NSString stringWithFormat:@"%d", self.tweet.retweetCount];
     
+    if(self.tweet.favorited == YES) {
+        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon-red"] forState:UIControlStateNormal];
+    } else {
+        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon"] forState:UIControlStateNormal];
+    }
+    
+    if(self.tweet.retweeted == YES) {
+        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon-green"] forState:UIControlStateNormal];
+    } else {
+        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon"] forState:UIControlStateNormal];
+    }
     
     NSURL *url = [NSURL URLWithString:self.tweet.user.profilePicURLString];
     self.profilePic.image = nil;
@@ -62,92 +74,55 @@
 
 - (IBAction)didTapRetweet:(id)sender {
     
-    self.tweet.retweeted = YES;
-    self.tweet.retweetCount += 1;
+    if(self.tweet.retweeted == NO) {
+        
+        [self.tweet didRetweet:self.tweet];
+        
+    } else {
+        
+        [self.tweet didUnretweet:self.tweet];
+        
+    }
+    
     [self refreshData];
     
-    if(self.tweet.retweeted == NO) {
-        [[APIManager shared] retweet:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error retweeting tweet: %@", error.localizedDescription);
-            } else{
-                NSLog(@"Successfully retweeted this tweet: %@", tweet.text);
-            }
-        }];
-    
-        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon-green"] forState:UIControlStateNormal];
-    
-    } else {
-    
-        self.tweet.retweeted = NO;
-        self.tweet.retweetCount -= 1;
-        [self refreshData];
-    
-        [[APIManager shared] unretweet:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error unretweeting tweet: %@", error.localizedDescription);
-            } else{
-                NSLog(@"Successfully unretweeted this tweet: %@", tweet.text);
-            }
-        }];
-    
-        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon"] forState:UIControlStateNormal];
-    }
 }
 
 - (IBAction)didTapFavorite:(id)sender {
     
     if(self.tweet.favorited == NO) {
         
-        self.tweet.favorited = YES;
-        self.tweet.favoriteCount += 1;
-        [self refreshData];
-        
-        [[APIManager shared] favorite:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error favoriting tweet: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully favorited this tweet: %@", tweet.text);
-            }
-        }];
-        
-        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon-red"] forState:UIControlStateNormal];
+        [self.tweet didFavorite:self.tweet];
         
     } else {
         
-        self.tweet.favorited = NO;
-        self.tweet.favoriteCount -= 1;
-        [self refreshData];
+        [self.tweet didUnfavorite:self.tweet];
         
-        [[APIManager shared] unfavorite:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error unfavoriting tweet: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully unfavorited this tweet: %@", tweet.text);
-            }
-        }];
-        
-        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon"] forState:UIControlStateNormal];
     }
+    
+    [self refreshData];
 }
 
+- (void)didTweet:(Tweet *)tweet {
+    
+    [self dismissViewControllerAnimated:true completion:nil];
+    
+}
 
 #pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    UIViewController *nextViewController = [segue destinationViewController];
+    UINavigationController *nextViewController = [segue destinationViewController];
     
-    if([nextViewController isKindOfClass:[ReplyViewController class]]) {
+    if([segue.identifier isEqualToString:@"replySegue"]) {
         
-        ((ReplyViewController *)nextViewController).oldTweet = self.tweet;
+        ComposeViewController *replyController = (ComposeViewController *)nextViewController.topViewController;
+        replyController.delegate = self;
+        replyController.replyTweet = self.tweet;
         
     }
-    
-    
     
 }
 

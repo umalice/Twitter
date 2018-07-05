@@ -7,8 +7,8 @@
 //
 
 #import "TweetCell.h"
+#import "Tweet.h"
 #import "UIImageView+AFNetworking.h"
-#import "APIManager.h"
 
 @implementation TweetCell
 
@@ -46,6 +46,12 @@
         [self.faveButton setImage:[UIImage imageNamed:@"favor-icon"] forState:UIControlStateNormal];
     }
     
+    if(self.tweet.retweeted == YES) {
+        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon-green"] forState:UIControlStateNormal];
+    } else {
+        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon"] forState:UIControlStateNormal];
+    }
+    
     NSURL *url = [NSURL URLWithString:self.tweet.user.profilePicURLString];
     self.profilePic.image = nil;
     if (url != nil) {
@@ -59,76 +65,31 @@
     
     if(self.tweet.favorited == NO) {
         
-        self.tweet.favorited = YES;
-        self.tweet.favoriteCount += 1;
-        [self refreshData];
-        
-        [[APIManager shared] favorite:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error favoriting tweet: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully favorited this tweet: %@", tweet.text);
-            }
-        }];
-        
-        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon-red"] forState:UIControlStateNormal];
+        [self.tweet didFavorite:self.tweet];
         
     } else {
         
-        self.tweet.favorited = NO;
-        self.tweet.favoriteCount -= 1;
-        [self refreshData];
+        [self.tweet didUnfavorite:self.tweet];
         
-        [[APIManager shared] unfavorite:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error unfavoriting tweet: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully unfavorited this tweet: %@", tweet.text);
-            }
-        }];
-        
-        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon"] forState:UIControlStateNormal];
     }
+    
+    [self refreshData];
 }
 
 - (IBAction)didTapRetweet:(id)sender {
     
     if(self.tweet.retweeted == NO) {
         
-        self.tweet.retweeted = YES;
-        self.tweet.retweetCount += 1;
-        [self refreshData];
-        
-        [[APIManager shared] retweet:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error retweeting tweet: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully retweeted this tweet: %@", tweet.text);
-            }
-        }];
-        
-        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon-green"] forState:UIControlStateNormal];
+        [self.tweet didRetweet:self.tweet];
         
     } else {
         
-        self.tweet.retweeted = NO;
-        self.tweet.retweetCount -= 1;
-        [self refreshData];
+        [self.tweet didUnretweet:self.tweet];
         
-        [[APIManager shared] unretweet:self.tweet completion:^(Tweet *tweet, NSError *error) {
-            if(error){
-                NSLog(@"Error unretweeting tweet: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully unretweeted this tweet: %@", tweet.text);
-            }
-        }];
-        
-        [self.retweetButton setImage:[UIImage imageNamed:@"retweet-icon"] forState:UIControlStateNormal];
     }
+    
+    [self refreshData];
+    
 }
 
 

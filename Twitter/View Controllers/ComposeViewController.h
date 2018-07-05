@@ -18,6 +18,7 @@
 
 @interface ComposeViewController : UIViewController
 
+@property (nonatomic, strong) Tweet *replyTweet;
 @property (nonatomic, weak) id<ComposeViewControllerDelegate> delegate;
 
 @end

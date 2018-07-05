@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "User.h"
 
-
 @interface Tweet : NSObject
 
 @property (nonatomic, strong) NSString *idStr;
@@ -28,5 +27,13 @@
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary;
 
 + (NSMutableArray *)tweetsWithArray:(NSArray *)dictionaries;
+
+- (void)didFavorite:(Tweet *)tweet;
+
+- (void)didUnfavorite:(Tweet *)tweet;
+
+- (void)didRetweet:(Tweet *)tweet;
+
+- (void)didUnretweet:(Tweet *)tweet;
 
 @end

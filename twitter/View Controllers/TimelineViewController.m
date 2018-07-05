@@ -14,7 +14,7 @@
 #import "AppDelegate.h"
 #import "LoginViewController.h"
 #import "DetailsViewController.h"
-#import "ReplyViewController.h"
+
 
 @interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -78,10 +78,12 @@
 
 - (void)didTweet:(Tweet *)tweet {
     
-    [self.tweetArray addObject:tweet];
-    [self fetchTweets];
+    [self.tweetArray insertObject:tweet atIndex:0];
+    [self.tableView reloadData];
     [self dismissViewControllerAnimated:true completion:nil];
+    
 }
+
 - (IBAction)didTapLogout:(id)sender {
     
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -98,31 +100,32 @@
 
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    UINavigationController *navigationController = [segue destinationViewController];
     
-    if([navigationController isKindOfClass:
+    UINavigationController *nextViewController = [segue destinationViewController];
+    
+    if([segue.identifier isEqualToString:@"composeSegue"]) {
         
-        [ComposeViewController class]]) {
-        ComposeViewController *composeController = (ComposeViewController *)navigationController.topViewController;
+        ComposeViewController *composeController = (ComposeViewController *)nextViewController.topViewController;
+        
         composeController.delegate = self;
+        composeController.replyTweet = nil;
         
-    } else {
+    } else if([segue.identifier isEqualToString:@"replySegue"]) {
+        
+        ComposeViewController *replyController = (ComposeViewController *)nextViewController.topViewController;
+        replyController.delegate = self;
+        replyController.replyTweet = ((TweetCell *)[[sender superview] superview]).tweet;
+        
+    } else if([segue.identifier isEqualToString:@"detailSegue"]){
+        
         UITableViewCell *tappedCell = sender;
         NSIndexPath *indexPath = [self.tableView indexPathForCell:tappedCell];
         
         Tweet *tweet = self.tweetArray[indexPath.row];
         
-        UIViewController *nextViewController = [segue destinationViewController];
+        DetailsViewController *detailController = (DetailsViewController *)nextViewController;
         
-        if([nextViewController isKindOfClass:[DetailsViewController class]]) {
-            
-            ((DetailsViewController *)nextViewController).tweet = tweet;
-            
-        } else if ([nextViewController isKindOfClass:[ReplyViewController class]]) {
-            
-            ((ReplyViewController *)nextViewController).oldTweet = tweet;
-            
-        }
+        detailController.tweet = tweet;
         
         
     }
