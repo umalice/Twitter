@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "User.h"
 
+
 @interface Tweet : NSObject
 
 @property (nonatomic, strong) NSString *idStr;

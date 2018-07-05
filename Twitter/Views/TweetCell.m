@@ -27,25 +27,7 @@
 - (void)setTweet:(Tweet *)tweet {
 
     _tweet = tweet;
-    self.tweetText.text = self.tweet.text;
-    self.name.text = self.tweet.user.name;
-    self.screenName.text = [NSString stringWithFormat:@"@%@", self.tweet.user.screenName];
-    self.timeStamp.text = self.tweet.timeAgoString;
-    self.faveCount.text = [NSString stringWithFormat:@"%d", self.tweet.favoriteCount];
-    self.retweetCount.text = [NSString stringWithFormat:@"%d", self.tweet.retweetCount];
-    self.replyCount.text = [NSString stringWithFormat:@"%d", self.tweet.replyCount];
-    
-    if(self.tweet.favorited == YES) {
-        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon-red"] forState:UIControlStateNormal];
-    } else {
-        [self.faveButton setImage:[UIImage imageNamed:@"favor-icon"] forState:UIControlStateNormal];
-    }
-    
-    NSURL *url = [NSURL URLWithString:self.tweet.user.profilePicURLString];
-    self.profilePic.image = nil;
-    if (url != nil) {
-        [self.profilePic setImageWithURL:url];
-    }
+    [self refreshData];
 }
 
 - (void)refreshData {

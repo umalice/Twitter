@@ -13,6 +13,8 @@
 #import "ComposeViewController.h"
 #import "AppDelegate.h"
 #import "LoginViewController.h"
+#import "DetailsViewController.h"
+#import "ReplyViewController.h"
 
 @interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -97,8 +99,35 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     UINavigationController *navigationController = [segue destinationViewController];
-    ComposeViewController *composeController = (ComposeViewController *)navigationController.topViewController;
-    composeController.delegate = self;
+    
+    if([navigationController isKindOfClass:
+        
+        [ComposeViewController class]]) {
+        ComposeViewController *composeController = (ComposeViewController *)navigationController.topViewController;
+        composeController.delegate = self;
+        
+    } else {
+        UITableViewCell *tappedCell = sender;
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:tappedCell];
+        
+        Tweet *tweet = self.tweetArray[indexPath.row];
+        
+        UIViewController *nextViewController = [segue destinationViewController];
+        
+        if([nextViewController isKindOfClass:[DetailsViewController class]]) {
+            
+            ((DetailsViewController *)nextViewController).tweet = tweet;
+            
+        } else if ([nextViewController isKindOfClass:[ReplyViewController class]]) {
+            
+            ((ReplyViewController *)nextViewController).oldTweet = tweet;
+            
+        }
+        
+        
+    }
+
+    
 }
 
 
