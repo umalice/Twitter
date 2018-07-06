@@ -20,6 +20,7 @@
         self.headerPicURLString = dictionary[@"profile_banner_url"];
         self.followerCount = [dictionary[@"followers_count"] intValue];
         self.followingCount = [dictionary[@"friends_count"] intValue];
+        self.bio = dictionary[@"description"];
     }
     
     return self;

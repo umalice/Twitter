@@ -142,6 +142,21 @@ static NSString * const consumerSecret = @"WglGaxIyzg8I85QgfWIzNYDf5xNjd5OyHtNbj
     
 }
 
+- (void)getUserTimeline:(void(^)(NSArray *tweets, NSError *error))completion {
+    
+    [self GET:@"1.1/statuses/user_timeline.json"
+   parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, NSArray *  _Nullable tweetDictionaries) {
+       
+       NSMutableArray *tweets = [Tweet tweetsWithArray:tweetDictionaries];
+       completion(tweets, nil);
+       
+   } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+       
+       completion(nil, error);
+   }];
+    
+}
+
 
 
 

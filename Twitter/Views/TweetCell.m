@@ -51,6 +51,7 @@
     self.retweetCount.text = [NSString stringWithFormat:@"%d", self.tweet.retweetCount];
     self.replyCount.text = [NSString stringWithFormat:@"%d", self.tweet.replyCount];
     
+    
     if(self.tweet.favorited == YES) {
         [self.faveButton setImage:[UIImage imageNamed:@"favor-icon-red"] forState:UIControlStateNormal];
     } else {
@@ -69,7 +70,11 @@
         [self.profilePic setImageWithURL:url];
     }
     
-    
+    NSURL *imageURL = [NSURL URLWithString:self.tweet.tweetPicURLString];
+    self.picView.image = nil;
+    if (imageURL != nil) {
+        [self.picView setImageWithURL:imageURL];
+    }
 }
 
 - (IBAction)didTapFavorite:(id)sender {

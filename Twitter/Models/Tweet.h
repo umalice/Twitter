@@ -21,6 +21,10 @@
 @property (nonatomic, strong) NSString *createdAtString;
 @property (nonatomic) int replyCount;
 @property (nonatomic, strong) NSString *timeAgoString;
+@property (nonatomic, strong) NSDictionary *entities;
+//@property (nonatomic, strong) NSArray *mediaArray;
+@property (nonatomic, strong) NSDictionary *media;
+@property (nonatomic, strong) NSString *tweetPicURLString;
 
 @property (nonatomic, strong) User *retweetedByUser;
 
