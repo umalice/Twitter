@@ -14,9 +14,10 @@
 #import "AppDelegate.h"
 #import "LoginViewController.h"
 #import "DetailsViewController.h"
+#import "OtherProfileViewController.h"
 
 
-@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
+@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, TweetCellDelegate>
 
 @property (nonatomic, strong) NSMutableArray *tweetArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -112,6 +113,7 @@
     
     cell.tweet = self.tweetArray[indexPath.row];
     [cell setTweet:cell.tweet];
+    cell.delegate = self;
     
     return cell;
 }
@@ -136,6 +138,13 @@
     [[APIManager shared] logout];
     
 }
+
+- (void)tweetCell:(TweetCell *)tweetCell didTap:(User *)user{
+    
+    [self performSegueWithIdentifier:@"otherProfileSegue" sender:user];
+
+}
+
 
 #pragma mark - Navigation
 
@@ -168,6 +177,11 @@
         
         detailController.tweet = tweet;
         
+    } else if([segue.identifier isEqualToString:@"otherProfileSegue"]){
+        
+        OtherProfileViewController *profileController = (OtherProfileViewController *)nextViewController;
+        
+        profileController.currentUser = sender;
         
     }
 

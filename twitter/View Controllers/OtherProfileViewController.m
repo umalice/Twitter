@@ -1,17 +1,16 @@
 //
-//  ProfileViewController.m
+//  OtherProfileViewController.m
 //  twitter
 //
-//  Created by Alice Park on 7/5/18.
+//  Created by Alice Park on 7/6/18.
 //  Copyright © 2018 Emerson Malca. All rights reserved.
 //
 
-#import "ProfileViewController.h"
+#import "OtherProfileViewController.h"
+#import "TimelineViewController.h"
 #import "UIImageView+AFNetworking.h"
-#import "APIManager.h"
-#import "User.h"
 
-@interface ProfileViewController ()
+@interface OtherProfileViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *headerPic;
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *name;
@@ -21,22 +20,11 @@
 
 @end
 
-@implementation ProfileViewController
+@implementation OtherProfileViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-        
-        [[APIManager shared] getCurrentUser:^(User *user, NSError *error) {
-            if(error){
-                NSLog(@"Error getting user: %@", error.localizedDescription);
-            } else{
-                NSLog(@"Successfully got user");
-                self.currentUser = [[User alloc] initWithDictionary:(NSDictionary *)user];
-                [self refreshData];
-            }
-        }];
-
+    [self refreshData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -50,7 +38,7 @@
     self.screenName.text = [NSString stringWithFormat:@"@%@", self.currentUser.screenName];
     self.followingCount.text = [NSString stringWithFormat:@"%d", self.currentUser.followingCount];
     self.followerCount.text = [NSString stringWithFormat:@"%d", self.currentUser.followerCount];
-
+    
     NSURL *profilePicURL = [NSURL URLWithString:self.currentUser.profilePicURLString];
     self.profilePic.image = nil;
     if (profilePicURL != nil) {
@@ -68,6 +56,7 @@
 /*
 #pragma mark - Navigation
 
+// In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
