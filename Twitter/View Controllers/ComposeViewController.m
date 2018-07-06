@@ -12,11 +12,13 @@
 #import "User.h"
 #import "UIImageView+AFNetworking.h"
 
-@interface ComposeViewController ()
+@interface ComposeViewController () <UITextViewDelegate>
+
 @property (weak, nonatomic) IBOutlet UITextView *composeView;
 @property (weak, nonatomic) IBOutlet UILabel *replyName;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *profilePic;
+@property (weak, nonatomic) IBOutlet UILabel *countLabel;
 
 @end
 
@@ -26,31 +28,43 @@
     [super viewDidLoad];
     [self.composeView becomeFirstResponder];
     
+    self.composeView.delegate = self;
+    self.countLabel.text = [NSString stringWithFormat:@"%d", 140];
+    
     if(self.replyTweet) {
         
         self.replyName.text = [NSString stringWithFormat:@"Replying to @%@", self.replyTweet.user.screenName];
         [self.replyName setHidden:NO];
-        self.topConstraint.constant = 48;
-        
-        [[APIManager shared] getCurrentUser:^(User *user, NSError *error) {
-            if(error){
-                NSLog(@"Error getting user: %@", error.localizedDescription);
-            }
-            else{
-                NSLog(@"Successfully got user");
-                User *currentUser = [[User alloc] initWithDictionary:(NSDictionary *)user];
-                NSURL *url = [NSURL URLWithString:currentUser.profilePicURLString];
-                self.profilePic.image = nil;
-                [self.profilePic setImageWithURL:url];
-            }
-        }];
-        
-
         
     } else {
         [self.replyName setHidden:YES];
     }
+    
+    [[APIManager shared] getCurrentUser:^(User *user, NSError *error) {
+        if(error){
+            NSLog(@"Error getting user: %@", error.localizedDescription);
+        }
+        else{
+            NSLog(@"Successfully got user");
+            User *currentUser = [[User alloc] initWithDictionary:(NSDictionary *)user];
+            NSURL *url = [NSURL URLWithString:currentUser.profilePicURLString];
+            self.profilePic.image = nil;
+            [self.profilePic setImageWithURL:url];
+        }
+    }];
 
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    
+    int characterLimit = 140;
+    
+    NSString *newText = [self.composeView.text stringByReplacingCharactersInRange:range withString:text];
+    
+    self.countLabel.text = [NSString stringWithFormat:@"%lu", characterLimit - newText.length];
+    
+    return newText.length < characterLimit;
+    
 }
 
 - (void)didReceiveMemoryWarning {

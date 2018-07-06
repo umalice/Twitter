@@ -16,11 +16,12 @@
 #import "DetailsViewController.h"
 
 
-@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray *tweetArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (assign, nonatomic) BOOL isMoreDataLoading;
 
 @end
 
@@ -54,8 +55,47 @@
         
     }];
 
-    
 }
+
+//-(void)loadMoreData{
+//
+//    // ... Create the NSURLRequest (myRequest) ...
+//
+//    // Configure session so that completion handler is executed on main UI thread
+//    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+//
+//    NSURLSession *session  = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+//
+//    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *requestError) {
+//        if (requestError != nil) {
+//
+//        }
+//        else {
+//            self.isMoreDataLoading = false;
+//
+//            // ... Use the new data to update the data source ...
+//
+//            // Reload the tableView now that there is new data
+//            [self.tableView reloadData];
+//        }
+//    }];
+//    [task resume];
+//}
+
+
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//    if(!self.isMoreDataLoading){
+//
+//        int scrollViewContentHeight = self.tableView.contentSize.height;
+//        int scrollOffsetThreshold = scrollViewContentHeight - self.tableView.bounds.size.height;
+//
+//        if(scrollView.contentOffset.y > scrollOffsetThreshold && self.tableView.isDragging) {
+//            self.isMoreDataLoading = true;
+//
+//            // ... Code to load more results ...
+//        }
+//    }
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -78,9 +118,10 @@
 
 - (void)didTweet:(Tweet *)tweet {
     
+    [self dismissViewControllerAnimated:true completion:nil];
     [self.tweetArray insertObject:tweet atIndex:0];
     [self.tableView reloadData];
-    [self dismissViewControllerAnimated:true completion:nil];
+    //find command - scrollview offset
     
 }
 
