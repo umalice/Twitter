@@ -17,7 +17,7 @@
 #import "OtherProfileViewController.h"
 
 
-@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate, TweetCellDelegate>
+@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, TweetCellDelegate>
 
 @property (nonatomic, strong) NSMutableArray *tweetArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -58,37 +58,6 @@
 
 }
 
--(void)loadMoreData{
-
-    NSNumber *moreCount = [NSNumber numberWithInt:7];
-    
-    [[APIManager shared] getMoreTweets:moreCount completion:^(NSArray *tweets, NSError *error) {
-        if (tweets) {
-            self.tweetArray = (NSMutableArray *)tweets;
-        } else {
-            NSLog(@"😫😫😫 Error loading more: %@", error.localizedDescription);
-        }
-        
-        [self.tableView reloadData];
-        
-    }];
-}
-
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if(!self.isMoreDataLoading){
-
-        int scrollViewContentHeight = self.tableView.contentSize.height;
-        int scrollOffsetThreshold = scrollViewContentHeight - self.tableView.bounds.size.height;
-
-        if(scrollView.contentOffset.y > scrollOffsetThreshold && self.tableView.isDragging) {
-            self.isMoreDataLoading = true;
-            [self loadMoreData];
-            self.isMoreDataLoading = false;
-
-        }
-    }
-}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
