@@ -42,7 +42,7 @@
 }
 
 - (void)fetchTweets {
-    // Get timeline
+
     [[APIManager shared] getHomeTimelineWithCompletion:^(NSArray *tweets, NSError *error) {
         if (tweets) {
             NSLog(@"😎😎😎 Successfully loaded home timeline");
@@ -58,45 +58,37 @@
 
 }
 
-//-(void)loadMoreData{
-//
-//    // ... Create the NSURLRequest (myRequest) ...
-//
-//    // Configure session so that completion handler is executed on main UI thread
-//    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-//
-//    NSURLSession *session  = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
-//
-//    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *requestError) {
-//        if (requestError != nil) {
-//
-//        }
-//        else {
-//            self.isMoreDataLoading = false;
-//
-//            // ... Use the new data to update the data source ...
-//
-//            // Reload the tableView now that there is new data
-//            [self.tableView reloadData];
-//        }
-//    }];
-//    [task resume];
-//}
+-(void)loadMoreData{
+
+    NSNumber *moreCount = [NSNumber numberWithInt:7];
+    
+    [[APIManager shared] getMoreTweets:moreCount completion:^(NSArray *tweets, NSError *error) {
+        if (tweets) {
+            self.tweetArray = (NSMutableArray *)tweets;
+        } else {
+            NSLog(@"😫😫😫 Error loading more: %@", error.localizedDescription);
+        }
+        
+        [self.tableView reloadData];
+        
+    }];
+}
 
 
-//- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//    if(!self.isMoreDataLoading){
-//
-//        int scrollViewContentHeight = self.tableView.contentSize.height;
-//        int scrollOffsetThreshold = scrollViewContentHeight - self.tableView.bounds.size.height;
-//
-//        if(scrollView.contentOffset.y > scrollOffsetThreshold && self.tableView.isDragging) {
-//            self.isMoreDataLoading = true;
-//
-//            // ... Code to load more results ...
-//        }
-//    }
-//}
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if(!self.isMoreDataLoading){
+
+        int scrollViewContentHeight = self.tableView.contentSize.height;
+        int scrollOffsetThreshold = scrollViewContentHeight - self.tableView.bounds.size.height;
+
+        if(scrollView.contentOffset.y > scrollOffsetThreshold && self.tableView.isDragging) {
+            self.isMoreDataLoading = true;
+            [self loadMoreData];
+            self.isMoreDataLoading = false;
+
+        }
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

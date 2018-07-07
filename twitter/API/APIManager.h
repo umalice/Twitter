@@ -21,6 +21,8 @@
 
 - (void)getUserTimeline:(void(^)(NSArray *tweets, NSError *error))completion;
 
+- (void)getOtherUserTimeline:(NSString *)screenName completion:(void(^)(NSArray *tweets, NSError *error))completion;
+
 - (void)favoriteTweet:(void(^)(NSArray *tweets, NSError *error))completion;
 
 - (void)retweet:(void(^)(NSArray *tweets, NSError *error))completion;
@@ -36,5 +38,7 @@
 - (void)unretweet:(Tweet *)tweet completion:(void (^)(Tweet *, NSError *))completion;
 
 - (void)getCurrentUser:(void (^)(User *, NSError *))completion;
+
+- (void)getMoreTweets:(NSNumber *)num completion:(void(^)(NSArray *tweets, NSError *error))completion;
 
 @end

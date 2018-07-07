@@ -35,6 +35,7 @@
         self.retweetCount = [dictionary[@"retweet_count"] intValue];
         self.retweeted = [dictionary[@"retweeted"] boolValue];
         self.replyCount = [dictionary[@"reply_count"] intValue];
+        
         self.entities = dictionary[@"entities"];
         if(self.entities[@"media"]) {
             self.media = (self.entities[@"media"])[0];
